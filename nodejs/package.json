@@ -1,0 +1,13 @@
+{
+  "name": "metal-translator",
+  "version": "0.0.1",
+  "description": "Node binding for machine translation",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ffi-rs": "^1.0.82"
+  }
+}
