@@ -4,6 +4,8 @@
 #include <iostream>
 #include <onmt/Tokenizer.h>
 
+#include <string>
+
 namespace MetalTranslate {
 
 MetalTranslate::MetalTranslate(MetalTranslateConfig config) {
