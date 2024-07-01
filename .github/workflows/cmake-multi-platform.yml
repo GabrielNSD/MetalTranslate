@@ -42,6 +42,7 @@ jobs:
           #   c_compiler: cl
           #   cpp_compiler: cl
           - os: macos-latest
+            arch: x64
             c_compiler: gcc
             cpp_compiler: g++
           # - os: ubuntu-latest
