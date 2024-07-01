@@ -41,7 +41,7 @@ jobs:
           # - os: windows-latest
           #   c_compiler: cl
           #   cpp_compiler: cl
-          - os: macos-latest
+          - os: macos-13
             arch: x64
             c_compiler: gcc
             cpp_compiler: g++
