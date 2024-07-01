@@ -74,16 +74,6 @@ jobs:
       - name: Install oneDNN
         run: brew install onednn
 
-      - name: Export ICU path
-        run: |
-          export ICU_ROOT=$(brew --prefix icu4c)
-          export CMAKE_PREFIX_PATH=$ICU_ROOT
-          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
-          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
-          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
-          export PATH="$ICU_ROOT/bin:$PATH"
-
-
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -96,7 +86,18 @@ jobs:
 
       - name: Build
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        run: |
+          export ICU_ROOT=$(brew --prefix icu4c)
+          export CMAKE_PREFIX_PATH=$ICU_ROOT
+          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+          export PATH="$ICU_ROOT/bin:$PATH"
+          echo $ICU_ROOT
+          echo $CMAKE_PREFIX
+          echo $PKG_CONFIG_PATH
+          echo $PATH
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
