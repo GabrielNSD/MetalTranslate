@@ -78,12 +78,20 @@ jobs:
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ github.workspace }}
+        # run: >
+        #   cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        #   -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        #   -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        #   -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        #   -S ${{ github.workspace }}
+        run: |
+          export ICU_ROOT=$(brew --prefix icu4c)
+          export CMAKE_PREFIX_PATH=$ICU_ROOT
+          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+          export PATH="$ICU_ROOT/bin:$PATH"
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
 
       - name: Build
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
@@ -94,9 +102,6 @@ jobs:
           export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
           export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
           export PATH="$ICU_ROOT/bin:$PATH"
-          echo $ICU_ROOT
-          echo $CMAKE_PREFIX
-          echo $PKG_CONFIG_PATH
           echo $PATH
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
