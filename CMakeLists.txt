@@ -69,7 +69,12 @@ target_include_directories(metaltranslate PRIVATE
 target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer)
 
 # Ensure rpath is set to include the directory where dependencies will be located
-set(CMAKE_INSTALL_RPATH "@loader_path/")
+set_target_properties(metaltranslate PROPERTIES
+    CXX_EXTENSIONS NO
+    CXX_STANDARD 17
+    INSTALL_RPATH "@loader_path"
+    BUILD_WITH_INSTALL_RPATH TRUE
+)
 
 set_target_properties(metaltranslate PROPERTIES
     CXX_EXTENSIONS NO
