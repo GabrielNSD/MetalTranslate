@@ -18,11 +18,13 @@ find_package(ICU REQUIRED COMPONENTS uc i18n data)
 include_directories(${ICU_INCLUDE_DIR})
 
 ExternalProject_Add(CTranslate2
+    PREFIX third_party/CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
 )
 
 ExternalProject_Add(Tokenizer
+    PREFIX third_party/Tokenizer
     GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
     -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
@@ -51,6 +53,8 @@ target_include_directories(metaltranslate PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/CTranslate2
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/Tokenizer
+    ${CMAKE_BINARY_DIR}/third_party/CTranslate2
+    ${CMAKE_BINARY_DIR}/third_party/Tokenizer
 )
 
 # target_sources(metaltranslate PRIVATE src/MetalTranslate.cpp)
