@@ -124,7 +124,7 @@ jobs:
           path: ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib
       
       - name: Upload libOpenNMTTokenizer
-        users: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: libOpenNMTTokenizer
           path: ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib
