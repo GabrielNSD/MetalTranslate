@@ -112,8 +112,14 @@ jobs:
         run: ctest --build-config ${{ matrix.build_type }}
 
       - name: Upload .dylib artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: my-dylib
+          name: libmetaltranslate
           path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib
+
+      - name: Upload libctranslate2
+        uses: actions/upload-artifact@v4
+        with:
+          name: libctranslate2.4
+          path: ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib
 
