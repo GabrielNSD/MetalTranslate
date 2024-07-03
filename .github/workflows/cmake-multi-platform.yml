@@ -103,7 +103,7 @@ jobs:
           export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
           export PATH="$ICU_ROOT/bin:$PATH"
           echo $PATH
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
