@@ -24,7 +24,8 @@ include_directories(${ICU_INCLUDE_DIR})
 ExternalProject_Add(CTranslate2
     PREFIX third_party/CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE -DCMAKE_INSTALL_RPATH=@loader_path -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+    BUILD_ALWAYS 1
 )
 
 ExternalProject_Add(Tokenizer
@@ -81,6 +82,9 @@ target_include_directories(metaltranslate PRIVATE
 # target_link_libraries(metaltranslate OpenNMTTokenizer)
 
 # Link third-party libraries to the metaltranslate library
+# target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer dnnl icuuc)
+
+add_dependencies(metaltranslate CTranslate2 Tokenizer) # this was added 
 target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer dnnl icuuc)
 
 # Ensure rpath is set to include the directory where dependencies will be located
@@ -90,6 +94,12 @@ set_target_properties(metaltranslate PROPERTIES
     INSTALL_RPATH "@loader_path"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
+
+# Set rpath for ctranslate2 library after it is built
+add_custom_command(
+    TARGET metaltranslate POST_BUILD
+    COMMAND install_name_tool -add_rpath "@loader_path" ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.4.3.1.dylib
+) # this was added 
 
 set_target_properties(metaltranslate PROPERTIES
     CXX_EXTENSIONS NO
