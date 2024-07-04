@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 project(MetalTranslate)
 
@@ -25,6 +25,7 @@ ExternalProject_Add(CTranslate2
     PREFIX third_party/CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+    INSTALL_RPATH "@loader_path"
     BUILD_ALWAYS 1
 )
 
@@ -91,9 +92,14 @@ target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer dnnl i
 set_target_properties(metaltranslate PROPERTIES
     CXX_EXTENSIONS NO
     CXX_STANDARD 17
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     INSTALL_RPATH "@loader_path"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
+
+# Set RPATH for all binaries
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+list(APPEND CMAKE_INSTALL_RPATH "@loader_path")
 
 # Set rpath for ctranslate2 library after it is built
 add_custom_command(
