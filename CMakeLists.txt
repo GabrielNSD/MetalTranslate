@@ -31,6 +31,13 @@ ExternalProject_Add(Tokenizer
     CXX_STANDARD 11
 )
 
+# Set oneDNN root directory (update this to your actual oneDNN installation directory)
+set(ONEDNN_ROOT "/opt/homebrew/Cellar/onednn/3.4.2")
+
+# Include oneDNN directory and library
+include_directories(${ONEDNN_ROOT}/include)
+link_directories(${ONEDNN_ROOT}/lib)
+
 # -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
@@ -66,7 +73,7 @@ target_include_directories(metaltranslate PRIVATE
 # target_link_libraries(metaltranslate OpenNMTTokenizer)
 
 # Link third-party libraries to the metaltranslate library
-target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer)
+target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer dnnl icuuc)
 
 # Ensure rpath is set to include the directory where dependencies will be located
 set_target_properties(metaltranslate PROPERTIES
@@ -79,4 +86,10 @@ set_target_properties(metaltranslate PROPERTIES
 set_target_properties(metaltranslate PROPERTIES
     CXX_EXTENSIONS NO
     CXX_STANDARD 17
+)
+
+# Copy required dylibs to the build directory
+add_custom_command(TARGET metaltranslate POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
+    COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.dylib $<TARGET_FILE_DIR:metaltranslate>
 )
