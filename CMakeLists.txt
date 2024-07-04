@@ -95,5 +95,5 @@ set_target_properties(metaltranslate PROPERTIES
 # Copy required dylibs to the build directory
 add_custom_command(TARGET metaltranslate POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
-    COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.dylib $<TARGET_FILE_DIR:metaltranslate>
+    COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
 )
