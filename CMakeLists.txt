@@ -31,8 +31,12 @@ ExternalProject_Add(Tokenizer
     CXX_STANDARD 11
 )
 
-# Set oneDNN root directory (update this to your actual oneDNN installation directory)
-set(ONEDNN_ROOT "/opt/homebrew/Cellar/onednn/3.4.2")
+# Execute brew command to get the ONEDNN_ROOT
+execute_process(
+    COMMAND brew --prefix onednn
+    OUTPUT_VARIABLE ONEDNN_ROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # Include oneDNN directory and library
 include_directories(${ONEDNN_ROOT}/include)
