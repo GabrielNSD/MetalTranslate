@@ -111,21 +111,20 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: ctest --build-config ${{ matrix.build_type }}
 
-      - name: Upload .dylib artifact
+      - name: Create ZIP file containing .dylib files
+        run: |
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
+          cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.4.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cd ${{ steps.strings.outputs.build-output-dir }}
+          zip -r libmetaltranslate.zip libs
+
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: libmetaltranslate
-          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib
-
-      - name: Upload libctranslate2
-        uses: actions/upload-artifact@v4
-        with:
-          name: libctranslate2.4
-          path: ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib
-      
-      - name: Upload libOpenNMTTokenizer
-        uses: actions/upload-artifact@v4
-        with:
-          name: libOpenNMTTokenizer
-          path: ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib
+          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.zip
 
