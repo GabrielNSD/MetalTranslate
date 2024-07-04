@@ -26,7 +26,7 @@ ExternalProject_Add(CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
     INSTALL_RPATH "@loader_path"
-    BUILD_ALWAYS 1
+    BUILD_WITH_INSTALL_RPATH TRUE
 )
 
 ExternalProject_Add(Tokenizer
