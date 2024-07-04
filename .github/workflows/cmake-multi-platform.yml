@@ -116,7 +116,7 @@ jobs:
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.4.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
