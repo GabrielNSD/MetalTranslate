@@ -7,7 +7,11 @@ include(ExternalProject)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 # Set ICU root directory (where Homebrew installed ICU)
-set(ICU_ROOT "/opt/homebrew/opt/icu4c")
+execute_process(
+    COMMAND brew --prefix icu4c
+    OUTPUT_VARIABLE ICU_ROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # Manually specify the include and library directories for ICU
 set(ICU_INCLUDE_DIR ${ICU_ROOT}/include)
