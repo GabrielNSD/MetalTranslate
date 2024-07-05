@@ -36,15 +36,16 @@ ExternalProject_Add(CTranslate2
     PREFIX third_party/CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+    LINK_FLAGS "-Wl,-rpath,./"
 )
 
-ExternalProject_Add_Step(CTranslate2 set_rpath
-    COMMAND ${CMAKE_COMMAND} -E echo "Setting RPATH for CTranslate2"
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${EXTERNAL_INSTALL_LOCATION}/lib
-    COMMAND install_name_tool -add_rpath "@loader_path" ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.dylib
-    DEPENDEES install
-    ALWAYS 1
-)
+# ExternalProject_Add_Step(CTranslate2 set_rpath
+#     COMMAND ${CMAKE_COMMAND} -E echo "Setting RPATH for CTranslate2"
+#     COMMAND ${CMAKE_COMMAND} -E make_directory ${EXTERNAL_INSTALL_LOCATION}/lib
+#     COMMAND install_name_tool -add_rpath "@loader_path" ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.dylib
+#     DEPENDEES install
+#     ALWAYS 1
+# )
 
 ExternalProject_Add(Tokenizer
     PREFIX third_party/Tokenizer
