@@ -36,16 +36,9 @@ ExternalProject_Add(CTranslate2
     PREFIX third_party/CTranslate2
     GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
-    LINK_FLAGS "-Wl,-rpath,./"
+    INSTALL_RPATH "@loader_path"
+    BUILD_WITH_INSTALL_RPATH TRUE
 )
-
-# ExternalProject_Add_Step(CTranslate2 set_rpath
-#     COMMAND ${CMAKE_COMMAND} -E echo "Setting RPATH for CTranslate2"
-#     COMMAND ${CMAKE_COMMAND} -E make_directory ${EXTERNAL_INSTALL_LOCATION}/lib
-#     COMMAND install_name_tool -add_rpath "@loader_path" ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.dylib
-#     DEPENDEES install
-#     ALWAYS 1
-# )
 
 ExternalProject_Add(Tokenizer
     PREFIX third_party/Tokenizer
@@ -90,8 +83,11 @@ set_target_properties(metaltranslate PROPERTIES
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 list(APPEND CMAKE_INSTALL_RPATH "@loader_path")
 
-# Copy required dylibs to the build directory
+# Copy required dylibs to the build directory and adjust LC_LOAD_DYLIB path
 add_custom_command(TARGET metaltranslate POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
     COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
+    COMMAND install_name_tool -change ${ONEDNN_ROOT}/lib/libdnnl.3.dylib @rpath/libdnnl.3.dylib $<TARGET_FILE:metaltranslate>
+    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib $<TARGET_FILE:metaltranslate>
+    COMMENT "Adjusting LC_LOAD_DYLIB path for libdnnl"
 )
