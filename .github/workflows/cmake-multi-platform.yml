@@ -70,6 +70,7 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Install oneDNN
+        if: runner.os == 'macOS'
         run: brew install onednn
 
       - name: Configure CMake
