@@ -69,40 +69,32 @@ jobs:
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Test arch
-        run: arch
-
       - name: Install oneDNN
         run: brew install onednn
 
       - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        # run: >
-        #   cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        #   -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        #   -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        #   -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        #   -S ${{ github.workspace }}
         run: |
-          export ICU_ROOT=$(brew --prefix icu4c)
-          export CMAKE_PREFIX_PATH=$ICU_ROOT
-          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
-          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
-          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
-          export PATH="$ICU_ROOT/bin:$PATH"
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            export ICU_ROOT=$(brew --prefix icu4c)
+            export CMAKE_PREFIX_PATH=$ICU_ROOT
+            export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+            export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+            export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+            export PATH="$ICU_ROOT/bin:$PATH"
+          fi
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
 
       - name: Build
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         run: |
-          export ICU_ROOT=$(brew --prefix icu4c)
-          export CMAKE_PREFIX_PATH=$ICU_ROOT
-          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
-          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
-          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
-          export PATH="$ICU_ROOT/bin:$PATH"
-          echo $PATH
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            export ICU_ROOT=$(brew --prefix icu4c)
+            export CMAKE_PREFIX_PATH=$ICU_ROOT
+            export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+            export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+            export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+            export PATH="$ICU_ROOT/bin:$PATH"
+          fi
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
@@ -112,6 +104,7 @@ jobs:
         run: ctest --build-config ${{ matrix.build_type }}
 
       - name: Create ZIP file containing .dylib files
+        if: runner.os == 'macOS'
         run: |
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
@@ -124,6 +117,7 @@ jobs:
           zip -r libmetaltranslate.zip libs
 
       - name: Upload ZIP artifact
+        if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: libmetaltranslate
