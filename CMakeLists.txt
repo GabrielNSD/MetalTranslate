@@ -85,9 +85,15 @@ list(APPEND CMAKE_INSTALL_RPATH "@loader_path")
 
 # Copy required dylibs to the build directory and adjust LC_LOAD_DYLIB path
 add_custom_command(TARGET metaltranslate POST_BUILD
+    COMMAND install_name_tool -change ${ONEDNN_ROOT}/lib/libdnnl.3.dylib @rpath/libdnnl.3.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.4.3.1.dylib # change lib path of ctranslate2 lib
+    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.4.3.1.dylib
+    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicudata.74.dylib @rpath/libicudata.74.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.dylib
+    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.dylib
+    # copy files to build directory
     COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
     COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
-    COMMAND install_name_tool -change ${ONEDNN_ROOT}/lib/libdnnl.3.dylib @rpath/libdnnl.3.dylib $<TARGET_FILE:metaltranslate>
-    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib $<TARGET_FILE:metaltranslate>
+    COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicudata.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
+    COMMAND install_name_tool -change ${ONEDNN_ROOT}/lib/libdnnl.3.dylib @rpath/libdnnl.3.dylib $<TARGET_FILE:metaltranslate> # change lib path of libemetalTranslate (dnnl)
+    COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib $<TARGET_FILE:metaltranslate> # change lib path of libemetalTranslate (libicuuc)
     COMMENT "Adjusting LC_LOAD_DYLIB path for libdnnl"
 )
