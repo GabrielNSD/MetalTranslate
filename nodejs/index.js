@@ -8,8 +8,19 @@
 const { load, DataType, open, close, define } = require("ffi-rs");
 const path = require("path");
 
-const dynamicLib = "./libmetaltranslate.dylib" //"./libmetaltranslate.so";
-// TODO: set dynamicLib according to OS
+let dynamicLib;
+switch (process.platform) {
+  case "linux":
+    dynamicLib = "./libmetaltranslate.so";
+    break;
+  case "darwin":
+    dynamicLib = "./libmetaltranslate.dylib";
+    break;
+  default:
+    console.error("OS Not supported");
+    process.exit(1);
+    break;
+}
 
 open({
   library: "metalTranslate",
@@ -45,9 +56,7 @@ class Translator {
    * @param {string} modelPath
    */
   constructor(modelPath) {
-    this.translator = metal.create_metal_translate([
-     modelPath,
-    ]);
+    this.translator = metal.create_metal_translate([modelPath]);
   }
 
   /**
@@ -74,19 +83,18 @@ class Translator {
 
 // Example usage:
 
-const modelPath = path.resolve("..", "models/translate-fairseq_m2m_100_418M/", "model/");
+const modelPath = path.resolve("..", "models/translate-fairseq_m2m_100_418M/");
 
-console.log('modelPath: ', modelPath)
+console.log("modelPath: ", modelPath);
 
 const testTranslator = new Translator(modelPath + "/");
 
 const textToTranslate = "This is a test of translation";
 
-const result = testTranslator.translate(textToTranslate, "en", "es");
+const result = testTranslator.translate(textToTranslate, "en", "fr");
 
 testTranslator.free();
 
 console.log("final result: ", result);
-
 
 exports.Translator = Translator;

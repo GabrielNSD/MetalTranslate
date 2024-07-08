@@ -4,7 +4,7 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: ["node-ffi-mac"]
+    branches: ["node-ffi-mac", "node-ffi-linux"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [macos-13]
+        os: [macos-13, ubuntu-latest]
         build_type: [Release]
         c_compiler: [gcc]
         include:
@@ -45,19 +45,19 @@ jobs:
             arch: x64
             c_compiler: gcc
             cpp_compiler: g++
-          # - os: ubuntu-latest
-          #   c_compiler: gcc
-          #   cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
           # - os: ubuntu-latest
           #   c_compiler: clang
           #   cpp_compiler: clang++
-        # exclude:
-        # - os: windows-latest
-        #   c_compiler: gcc
-        # - os: windows-latest
-        #   c_compiler: clang
-        # - os: ubuntu-latest
-        #   c_compiler: cl
+        exclude:
+          # - os: windows-latest
+          #   c_compiler: gcc
+          # - os: windows-latest
+          #   c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: cl
 
     steps:
       - uses: actions/checkout@v4
@@ -93,7 +93,7 @@ jobs:
             export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
             export PATH="$ICU_ROOT/bin:$PATH"
           fi
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
 
       - name: Build
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
@@ -119,11 +119,22 @@ jobs:
         run: |
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.5.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libicudata.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.5.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/libdnnl.3.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/libicuuc.74.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicudata.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/libicudata.74.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/libctranslate2.4.dylib
           cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cd ${{ steps.strings.outputs.build-output-dir }}
+          zip -r libmetaltranslate.zip libs
+
+      - name: Create ZIP file containing .so files
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
+          cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.so ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
           zip -r libmetaltranslate.zip libs
 
@@ -133,4 +144,3 @@ jobs:
         with:
           name: libmetaltranslate
           path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.zip
-
