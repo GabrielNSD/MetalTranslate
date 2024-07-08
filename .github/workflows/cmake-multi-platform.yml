@@ -77,6 +77,10 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt install -y libdnnl-dev
 
+      - name: Update submodules
+        if: runner.os == 'Linux'
+        run: git submodule update --init --recursive
+
       - name: Verify dependencies
         if: runner.os == 'macOS'
         run: |
