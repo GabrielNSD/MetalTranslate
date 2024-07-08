@@ -93,7 +93,7 @@ if (APPLE)
         COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicudata.74.dylib @rpath/libicudata.74.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.dylib
         COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.dylib
         # copy files to build directory
-        COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
+        COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.5.dylib $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicudata.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
         COMMENT "Adjusting LC_LOAD_DYLIB path for libdnnl"
