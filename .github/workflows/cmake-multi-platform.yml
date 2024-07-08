@@ -73,6 +73,10 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install onednn
 
+      - name: Install libdnnl-dev
+        if: runner.os == 'Linux'
+        run: sudo apt install -y libdnnl-dev
+
       - name: Verify dependencies
         if: runner.os == 'macOS'
         run: |
