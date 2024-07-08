@@ -31,7 +31,7 @@ std::string MetalTranslate::Translate(std::string source,
   // ctranslate2::Translator translator(
   //     num_translators, num_threads_per_translator,
   //     this->_config.ModelPath + "model", ctranslate2::Device::CPU);
-  ctranslate2::Translator translator(this->_config.ModelPath, ctranslate2::Device::CPU);
+  ctranslate2::Translator translator(this->_config.ModelPath + "model", ctranslate2::Device::CPU);
 
   const std::vector<std::vector<std::string>> batch = {tokens};
   const std::vector<std::vector<std::string>> target_prefix = {
