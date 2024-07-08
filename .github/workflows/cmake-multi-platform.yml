@@ -141,7 +141,7 @@ jobs:
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.so ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
           zip -r libmetaltranslate.zip libs
