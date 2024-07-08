@@ -73,6 +73,16 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install onednn
 
+      - name: Verify dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew list icu4c
+          brew list onednn
+          echo "ICU4C include directory: $(brew --prefix icu4c)/include"
+          echo "ICU4C library directory: $(brew --prefix icu4c)/lib"
+          echo "oneDNN include directory: $(brew --prefix onednn)/include"
+          echo "oneDNN library directory: $(brew --prefix onednn)/lib"
+
       - name: Configure CMake
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then

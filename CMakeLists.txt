@@ -31,7 +31,7 @@ if(APPLE)
 
     # Include oneDNN directory and library
     include_directories(${ONEDNN_ROOT}/include)
-    link_directories(${ONEDNN_ROOT}/lib)
+    # link_directories(${ONEDNN_ROOT}/lib)
 endif()
 
 ExternalProject_Add(CTranslate2
@@ -70,7 +70,7 @@ target_include_directories(metaltranslate PRIVATE
 )
 
 add_dependencies(metaltranslate CTranslate2 Tokenizer)
-target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer dnnl icuuc)
+target_link_libraries(metaltranslate PRIVATE ctranslate2 OpenNMTTokenizer)
 
 # Ensure rpath is set to include the directory where dependencies will be located
 set_target_properties(metaltranslate PROPERTIES
@@ -96,8 +96,6 @@ if (APPLE)
         COMMAND ${CMAKE_COMMAND} -E copy ${ONEDNN_ROOT}/lib/libdnnl.3.4.dylib $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicuuc.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${ICU_LIBRARY_DIR}/libicudata.74.2.dylib $<TARGET_FILE_DIR:metaltranslate>
-        COMMAND install_name_tool -change ${ONEDNN_ROOT}/lib/libdnnl.3.dylib @rpath/libdnnl.3.dylib $<TARGET_FILE:metaltranslate> # change lib path of libemetalTranslate (dnnl)
-        COMMAND install_name_tool -change ${ICU_LIBRARY_DIR}/libicuuc.74.dylib @rpath/libicuuc.74.dylib $<TARGET_FILE:metaltranslate> # change lib path of libemetalTranslate (libicuuc)
         COMMENT "Adjusting LC_LOAD_DYLIB path for libdnnl"
     )
 endif()
