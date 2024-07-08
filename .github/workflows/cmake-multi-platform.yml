@@ -133,7 +133,7 @@ jobs:
           cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/libctranslate2.4.dylib
           cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
-          zip -r libmetaltranslate.zip libs
+          zip -r libmetaltranslateMac.zip libs
 
       - name: Create ZIP file containing .so files
         if: runner.os == 'Linux'
@@ -144,11 +144,18 @@ jobs:
           cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
-          zip -r libmetaltranslate.zip libs
+          zip -r libmetaltranslateLinux.zip libs
 
       - name: Upload ZIP artifact
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
-          name: libmetaltranslate
-          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.zip
+          name: libmetaltranslateMac
+          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslateMac.zip
+
+      - name: Upload ZIP artifact
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: libmetaltranslateLinux
+          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslateLinux.zip
