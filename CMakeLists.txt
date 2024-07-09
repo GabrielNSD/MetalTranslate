@@ -41,25 +41,23 @@ elseif(UNIX)
     )
 endif()
 
-if(APPLE)
-    ExternalProject_Add(CTranslate2
-        PREFIX third_party/CTranslate2
-        GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
-        INSTALL_RPATH "@loader_path"
-        BUILD_WITH_INSTALL_RPATH TRUE
-    )
+ExternalProject_Add(CTranslate2
+    PREFIX third_party/CTranslate2
+    GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+    INSTALL_RPATH "@loader_path"
+    BUILD_WITH_INSTALL_RPATH TRUE
+)
 
-    ExternalProject_Add(Tokenizer
-        PREFIX third_party/Tokenizer
-        GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
-        CXX_STANDARD 11
-    )
-    include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
-    link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-endif()
+ExternalProject_Add(Tokenizer
+    PREFIX third_party/Tokenizer
+    GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
+    CXX_STANDARD 11
+)
+include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
 add_library(metaltranslate SHARED
     src/MetalTranslate.cpp
@@ -72,24 +70,12 @@ set(TARGET_H
     src/metal_api.h
 )
 
-if(APPLE)
-    target_include_directories(metaltranslate PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${EXTERNAL_INSTALL_LOCATION}/include
-    )
-elseif(UNIX)
-    target_include_directories(metaltranslate PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/CTranslate2
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/Tokenizer
-    )
-    add_subdirectory(third_party/CTranslate2)
-    add_subdirectory(third_party/Tokenizer)
-endif()
+target_include_directories(metaltranslate PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${EXTERNAL_INSTALL_LOCATION}/include
+)
 
-if(APPLE)
-    add_dependencies(metaltranslate CTranslate2 Tokenizer)
-endif()
+add_dependencies(metaltranslate CTranslate2 Tokenizer)
 
 message("DIRS: ")
 message(STATUS "${EXTERNAL_INSTALL_LOCATION}")
@@ -124,8 +110,6 @@ if(APPLE)
     list(APPEND CMAKE_INSTALL_RPATH "@loader_path")
 endif()
 
-set(TEST_PATH '$ORIGIN/libdnnl.so')
-
 if(APPLE)
     # Copy required dylibs to the build directory and adjust LC_LOAD_DYLIB path
     add_custom_command(TARGET metaltranslate POST_BUILD
@@ -142,11 +126,12 @@ if(APPLE)
     )
 elseif(UNIX)
     add_custom_command(TARGET metaltranslate POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/third_party/CTranslate2/libctranslate2.so $<TARGET_FILE_DIR:metaltranslate>
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/third_party/Tokenizer/libOpenNMTTokenizer.so $<TARGET_FILE_DIR:metaltranslate>
+
+        COMMAND ${CMAKE_COMMAND} -E copy ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.so $<TARGET_FILE_DIR:metaltranslate>/libctranslate2.so.4
+        COMMAND ${CMAKE_COMMAND} -E copy ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.so $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${LIBDNNL_SO} $<TARGET_FILE_DIR:metaltranslate>
 
-        COMMAND patchelf --replace-needed libdnnl.so.2 '$$ORIGIN/libdnnl.so' ${CMAKE_CURRENT_BINARY_DIR}/libctranslate2.so
+        COMMAND patchelf --replace-needed libdnnl.so.3 '$$ORIGIN/libdnnl.so' ${CMAKE_CURRENT_BINARY_DIR}/libctranslate2.so.4
         COMMENT "Adjusting ctranslate2 rpath and copying shared objects"
     )
 endif()

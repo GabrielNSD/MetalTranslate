@@ -1,10 +1,6 @@
 #include "MetalTranslate.h"
 
-#ifdef __linux__
-#include <ctranslate2/translator_pool.h>
-#else
 #include <ctranslate2/translator.h>
-#endif
 #include <iostream>
 #include <onmt/Tokenizer.h>
 
@@ -31,13 +27,7 @@ std::string MetalTranslate::Translate(std::string source,
   // CTranslate2
   const size_t num_translators = 1;
   const size_t num_threads_per_translator = 0; // Unused with DNNL
-  #ifdef __linux__
-  ctranslate2::TranslatorPool translator(
-      num_translators, num_threads_per_translator,
-      this->_config.ModelPath + "model", ctranslate2::Device::CPU);
-  #else
   ctranslate2::Translator translator(this->_config.ModelPath + "model", ctranslate2::Device::CPU);
-  #endif
 
   const std::vector<std::vector<std::string>> batch = {tokens};
   const std::vector<std::vector<std::string>> target_prefix = {

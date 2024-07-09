@@ -73,9 +73,25 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install onednn
 
-      - name: Install libdnnl-dev
+      - name: Add Oracular repository
         if: runner.os == 'Linux'
-        run: sudo apt install -y libdnnl-dev
+        run: |
+          echo "deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/oracular.list
+
+      - name: Update package lists
+        if: runner.os == 'Linux'
+        run: sudo apt update
+
+      - name: Install libdnnl-dev from oracular
+        if: runner.os == 'Linux'
+        run: sudo apt install -t oracular -y libdnnl-dev
+
+      - name: Pin libdnnl-dev
+        if: runner.os == 'Linux'
+        run: |
+          echo "Package: libdnnl-dev" | sudo tee /etc/apt/preferences.d/pin-oracular-package
+          echo "Pin: release n=oracular" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
+          echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
 
       - name: Update submodules
         if: runner.os == 'Linux'
@@ -141,7 +157,7 @@ jobs:
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.so ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so.4 ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
           zip -r libmetaltranslateLinux.zip libs
