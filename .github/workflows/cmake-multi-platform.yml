@@ -93,10 +93,6 @@ jobs:
           echo "Pin: release n=oracular" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
           echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
 
-      - name: Update submodules
-        if: runner.os == 'Linux'
-        run: git submodule update --init --recursive
-
       - name: Verify dependencies
         if: runner.os == 'macOS'
         run: |

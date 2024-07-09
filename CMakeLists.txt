@@ -110,6 +110,7 @@ if(APPLE)
     list(APPEND CMAKE_INSTALL_RPATH "@loader_path")
 endif()
 
+# TODO: find a better way to get these libraries version number (they can change between builds)
 if(APPLE)
     # Copy required dylibs to the build directory and adjust LC_LOAD_DYLIB path
     add_custom_command(TARGET metaltranslate POST_BUILD
