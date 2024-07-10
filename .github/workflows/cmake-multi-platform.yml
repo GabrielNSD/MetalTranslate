@@ -107,7 +107,7 @@ jobs:
       - name: Instanll onednn on Windows
         if: runner.os == 'Windows'
         run: |
-          git clone https://github.com/opeapi-src/oneDNN.git
+          git clone https://github.com/oneapi-src/oneDNN.git
           cd .\oneDNN\
           git fetch --all --tags
           git checkout tags/v3.5
