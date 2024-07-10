@@ -103,7 +103,8 @@ jobs:
           echo "oneDNN include directory: $(brew --prefix onednn)/include"
           echo "oneDNN library directory: $(brew --prefix onednn)/lib"
 
-      - name: Configure CMake
+      - name: Configure CMake Unix
+        if: runner.os != 'Windows'
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
             export ICU_ROOT=$(brew --prefix icu4c)
@@ -115,7 +116,12 @@ jobs:
           fi
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
 
-      - name: Build
+      - name: Configure CMake Windows
+        if: runner.os == 'Windows'
+        run: cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
+
+      - name: Build Unix
+        if: runner.os != 'Windows'
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
@@ -127,6 +133,10 @@ jobs:
             export PATH="$ICU_ROOT/bin:$PATH"
           fi
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
