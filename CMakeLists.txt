@@ -41,21 +41,47 @@ elseif(UNIX)
     )
 endif()
 
-ExternalProject_Add(CTranslate2
-    PREFIX third_party/CTranslate2
-    GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
-    INSTALL_RPATH "@loader_path"
-    BUILD_WITH_INSTALL_RPATH TRUE
-)
+if(APPLE)
+    ExternalProject_Add(CTranslate2
+        PREFIX third_party/CTranslate2
+        GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+        INSTALL_RPATH "@loader_path"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+elseif(UNIX)
+    ExternalProject_Add(CTranslate2
+        PREFIX third_party/CTranslate2
+        GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+        INSTALL_RPATH "$$ORIGIN"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+else()
+    ExternalProject_Add(CTranslate2
+        PREFIX third_party/CTranslate2
+        GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+    )
+endif()
 
-ExternalProject_Add(Tokenizer
-    PREFIX third_party/Tokenizer
-    GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-    -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
-    CXX_STANDARD 11
-)
+if(UNIX)
+    ExternalProject_Add(Tokenizer
+        PREFIX third_party/Tokenizer
+        GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
+        CXX_STANDARD 11
+    )
+else()
+    ExternalProject_Add(Tokenizer
+        PREFIX third_party/Tokenizer
+        GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+        CXX_STANDARD 11
+    )
+endif()
+
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
@@ -102,6 +128,12 @@ elseif(UNIX)
         INSTALL_RPATH "$ORIGIN"
         BUILD_WITH_INSTALL_RPATH TRUE
     )
+else()
+    set_target_properties(metaltranslate PROPERTIES
+        CXX_EXTENSIONS NO
+        CXX_STANDARD 17
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    )
 endif()
 
 if(APPLE)
@@ -134,5 +166,11 @@ elseif(UNIX)
 
         COMMAND patchelf --replace-needed libdnnl.so.3 '$$ORIGIN/libdnnl.so' ${CMAKE_CURRENT_BINARY_DIR}/libctranslate2.so.4
         COMMENT "Adjusting ctranslate2 rpath and copying shared objects"
+    )
+else()
+    add_custom_command(TARGET metaltranslate POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:metaltranslate> $<TARGET_RUNTIME_DLLS:metaltranslate>
+        COMMAND dir /s $<TARGET_FILE_DIR:metaltranslate>
+        COMMAND_EXPAND_LISTS
     )
 endif()
