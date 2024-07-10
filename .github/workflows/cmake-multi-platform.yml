@@ -4,7 +4,7 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: ["node-ffi-mac", "node-ffi-linux"]
+    branches: ["node-ffi-mac", "node-ffi-linux", "node-ffi-windows"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -34,13 +34,13 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [macos-13, ubuntu-latest]
+        os: [macos-13, ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc]
         include:
-          # - os: windows-latest
-          #   c_compiler: cl
-          #   cpp_compiler: cl
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
           - os: macos-13
             arch: x64
             c_compiler: gcc
@@ -52,10 +52,10 @@ jobs:
           #   c_compiler: clang
           #   cpp_compiler: clang++
         exclude:
-          # - os: windows-latest
-          #   c_compiler: gcc
-          # - os: windows-latest
-          #   c_compiler: clang
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
           - os: ubuntu-latest
             c_compiler: cl
 
