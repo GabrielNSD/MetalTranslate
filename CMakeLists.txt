@@ -45,6 +45,7 @@ if(APPLE)
     ExternalProject_Add(CTranslate2
         PREFIX third_party/CTranslate2
         GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+        GIT_TAG v4.3.1
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
         INSTALL_RPATH "@loader_path"
         BUILD_WITH_INSTALL_RPATH TRUE
@@ -53,6 +54,7 @@ elseif(UNIX)
     ExternalProject_Add(CTranslate2
         PREFIX third_party/CTranslate2
         GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+        GIT_TAG v4.3.1
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
         INSTALL_RPATH "$$ORIGIN"
         BUILD_WITH_INSTALL_RPATH TRUE
@@ -61,7 +63,8 @@ else()
     ExternalProject_Add(CTranslate2
         PREFIX third_party/CTranslate2
         GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+        GIT_TAG v4.3.1
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_PROJECT_ctranslate2_INCLUDE=${CMAKE_SOURCE_DIR}/fix_ctranslate2.cmake -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
     )
 endif()
 
@@ -69,6 +72,7 @@ if(UNIX)
     ExternalProject_Add(Tokenizer
         PREFIX third_party/Tokenizer
         GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+        GIT_TAG v1.37.1
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
         -DCMAKE_CXX_FLAGS="-Wno-enum-constexpr-conversion"
         CXX_STANDARD 11
@@ -77,6 +81,7 @@ else()
     ExternalProject_Add(Tokenizer
         PREFIX third_party/Tokenizer
         GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+        GIT_TAG v1.37.1
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
         CXX_STANDARD 11
     )
