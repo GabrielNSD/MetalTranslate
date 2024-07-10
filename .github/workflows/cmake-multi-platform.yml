@@ -41,6 +41,7 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            build_type: Release
           - os: macos-13
             arch: x64
             c_compiler: gcc
