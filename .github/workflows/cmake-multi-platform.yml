@@ -113,7 +113,7 @@ jobs:
           git checkout tags/v3.5
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" .. -DNNL_BUILD_DOC=OFF -DNNL_BUILD_EXAMPLES=OFF -DNNL_BUILD_TESTS=OFF -DNNL_BUILD_GRAPH=OFF
+          cmake -G "Visual Studio 17 2022" .. -DDNNL_BUILD_DOC=OFF -DDNNL_BUILD_EXAMPLES=OFF -DDNNL_BUILD_TESTS=OFF -DDNNL_BUILD_GRAPH=OFF
           cmake --build . --config=Release
           cmake --build . --target install
 
