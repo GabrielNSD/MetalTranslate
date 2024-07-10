@@ -135,12 +135,9 @@ jobs:
         run: |
           setx INCLUDE "C:\Program Files (x86)\oneDNN\include;%INCLUDE%"
           setx LIB "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;%LIB"
-          echo "PATH:"
-          Get-Item Env:PATH
-          echo "LIB:"
-          Get-Item Env:LIB
-          echo "INCLUDE: "
-          Get-Item Env:INCLUDE
+          echo "PATH: %PATH%"
+          echo "LIB: %LIB%"
+          echo "INCLUDE: %INCLUDE%"
           echo "Build type: ${{ matrix.build_type }}"
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
 
