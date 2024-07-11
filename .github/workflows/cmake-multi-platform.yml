@@ -139,7 +139,6 @@ jobs:
         run: |
           $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
           $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
-          echo "PATH: $env:PATH"
           echo "LIB: $env:LIB"
           echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
@@ -162,6 +161,10 @@ jobs:
       - name: Build Windows
         if: runner.os == 'Windows'
         run: |
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
+          echo "LIB: $env:LIB"
+          echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
