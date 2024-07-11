@@ -107,6 +107,11 @@ jobs:
       - name: Install onednn on Windows
         if: runner.os == 'Windows'
         run: |
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
+          echo "PATH: $env:PATH"
+          echo "LIB: $env:LIB"
+          echo "INCLUDE: $env:INCLUDE"
           git clone https://github.com/oneapi-src/oneDNN.git
           cd .\oneDNN\
           git fetch --all --tags
@@ -132,14 +137,11 @@ jobs:
       - name: Configure CMake Windows
         if: runner.os == 'Windows'
         run: |
-          echo "INCLUDE=C:\Program Files (x86)\oneDNN\include;%INCLUDE%" >> $GITHUB_ENV
-          echo "LIB=C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;%LIB%" >> $GITHUB_ENV
-          echo "PATH=%PATH%" >> $GITHUB_ENV
-          echo "LIB=%LIB%" >> $GITHUB_ENV
-          echo "INCLUDE=%INCLUDE%" >> $GITHUB_ENV
-          echo "PATH: ${{ env.PATH }}"
-          echo "LIB: ${{ env.LIB }}"
-          echo "INCLUDE: ${{ env.INCLUDE }}"
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
+          echo "PATH: $env:PATH"
+          echo "LIB: $env:LIB"
+          echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
 
