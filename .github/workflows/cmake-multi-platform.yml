@@ -107,19 +107,11 @@ jobs:
       - name: Install onednn on Windows
         if: runner.os == 'Windows'
         run: |
-          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
-          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
-          echo "PATH: $env:PATH"
-          echo "LIB: $env:LIB"
-          echo "INCLUDE: $env:INCLUDE"
-          git clone https://github.com/oneapi-src/oneDNN.git
-          cd .\oneDNN\
-          git fetch --all --tags
-          git checkout tags/v3.5
-          mkdir build
-          cd build
-          cmake -G "Visual Studio 17 2022" .. -DDNNL_BUILD_DOC=OFF -DDNNL_BUILD_EXAMPLES=OFF -DDNNL_BUILD_TESTS=OFF -DDNNL_BUILD_GRAPH=OFF
-          cmake --build . --target install
+          curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
+          tar xf .\oneDNN-3.5.tar.gz
+          cd .\oneDNN-3.5\
+          cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
+          cmake --build . --config Release --target install --parallel 6  
 
       - name: Configure CMake Unix
         if: runner.os != 'Windows'
@@ -166,6 +158,7 @@ jobs:
           echo "LIB: $env:LIB"
           echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
+          $env:CMAKE_PREFIX_PATH = "C:\Program Files (x86)\oneDNN"
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test

@@ -6,7 +6,10 @@
  */
 
 const { load, DataType, open, close, define } = require("ffi-rs");
+const { platform } = require("os");
 const path = require("path");
+
+console.log(process.platform);
 
 let dynamicLib;
 switch (process.platform) {
@@ -16,11 +19,16 @@ switch (process.platform) {
   case "darwin":
     dynamicLib = "./libmetaltranslate.dylib";
     break;
+  case "win32":
+    dynamicLib = path.join(__dirname, "metaltranslate.dll");
+    break;
   default:
     console.error("OS Not supported");
     process.exit(1);
     break;
 }
+
+console.log("dynamiclib: ", dynamicLib);
 
 open({
   library: "metalTranslate",
@@ -66,6 +74,7 @@ class Translator {
    * @param {string} targetCode
    */
   translate(text, sourceCode, targetCode) {
+    //console.log("calling translate", { text, sourceCode, targetCode });
     const result = metal.translate([
       this.translator,
       text,
@@ -73,6 +82,7 @@ class Translator {
       targetCode,
     ]);
     console.log("result in method", result);
+    //metal.free_translated_string([result]);
     return result;
   }
 
@@ -83,11 +93,12 @@ class Translator {
 
 // Example usage:
 
-const modelPath = path.resolve("..", "models/translate-fairseq_m2m_100_418M/");
+const modelPath = path.resolve("..", "models/translate-fairseq_m2m_100_418M/") + ( process.platform === 'win32' ? "\\" : "/");
 
 console.log("modelPath: ", modelPath);
 
-const testTranslator = new Translator(modelPath + "/");
+const testTranslator = new Translator(modelPath);
+// console.log("instatiated");
 
 const textToTranslate = "This is a test of translation";
 

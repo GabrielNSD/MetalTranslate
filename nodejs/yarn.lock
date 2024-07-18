@@ -2,62 +2,62 @@
 # yarn lockfile v1
 
 
-"@yuuang/ffi-rs-darwin-arm64@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-darwin-arm64/-/ffi-rs-darwin-arm64-1.0.82.tgz#c4bd4d4e5d03dd55a3a60b792ffec753ec2882c6"
-  integrity sha512-2UwExy++eBupm/d/vBdyq6AmdFrJGafAjdIaH4G4t7VS+LAprTsRJsIELIUVJrT8rWpj4OceO3lHs7D/2NYWtA==
+"@yuuang/ffi-rs-darwin-arm64@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-darwin-arm64/-/ffi-rs-darwin-arm64-1.0.86.tgz#b5bebd57abb3d5821234d21c4c3e33396a8616d2"
+  integrity sha512-3LKI5kPaz6vc9u3Iubjk1T5qHeme/LAjEsii+Czr4UhDSYRY4OibGsmbcfPw8boqBjH42UHZx/+jYYKxtXuhng==
 
-"@yuuang/ffi-rs-darwin-x64@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-darwin-x64/-/ffi-rs-darwin-x64-1.0.82.tgz#f2e6d298bae1ea92f54115d58f1be89af26f0459"
-  integrity sha512-l3JWU2OxhBIAZo2JX0WvDdXirrU8tg30dhrSkFsX+jraRiD+WgDLNpf2zNc9lALrc+6Vg8Xse6XbExMQnBn2gg==
+"@yuuang/ffi-rs-darwin-x64@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-darwin-x64/-/ffi-rs-darwin-x64-1.0.86.tgz#b35066703cf1cad834d3c4f1486631981ed9b86e"
+  integrity sha512-1iOrhnWLmFjLFjrTydy+ThVnNdfE66yLtzPiybjGlhMyd5M6lJpA6pbbbvgnEcHtlWp3KnvSaMF2JAsAVaalfQ==
 
-"@yuuang/ffi-rs-linux-arm64-gnu@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-arm64-gnu/-/ffi-rs-linux-arm64-gnu-1.0.82.tgz#444906fdedcbcba33b5fbb800d0a172a2c050cbd"
-  integrity sha512-+JFtlAGbWgWvPytn0YNDEX94aWgw56UOaNhC2jK0vANzsFZqJoTI8nNd5CcSvGG36JckeGp2wZaRi3la5aJXHQ==
+"@yuuang/ffi-rs-linux-arm64-gnu@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-arm64-gnu/-/ffi-rs-linux-arm64-gnu-1.0.86.tgz#0b992191fd90ea8624fa212b16e59f9b66cae9aa"
+  integrity sha512-evoytKEwhe2asBHM8s+fRJT/mYtjrCJuE9u9NjsZgKiouDyR40d70nQIppPS2eJ+VRrUAymxPhLrpLEuexmE4A==
 
-"@yuuang/ffi-rs-linux-arm64-musl@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-arm64-musl/-/ffi-rs-linux-arm64-musl-1.0.82.tgz#8c38e0727fda003ba630fbfdb19502c12076f1d0"
-  integrity sha512-2qu4YdYwSb5CQLP3sKCY0b4ga4dZCqCuOp+beOlCJMt9HXlCzFRGOoNllvnNHoxPsOrKs5phTMEd17vC58Ubgg==
+"@yuuang/ffi-rs-linux-arm64-musl@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-arm64-musl/-/ffi-rs-linux-arm64-musl-1.0.86.tgz#a81be7145862d1c07946460395920926fa8b48e2"
+  integrity sha512-/++L+ANCdQQVW8NEWE3w6axKlTixojvJyoiI+Qz/UKHQgCTyI8l41dVsHM8Ui2naq9itaOd0wG9opGyCWd/07Q==
 
-"@yuuang/ffi-rs-linux-x64-gnu@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-x64-gnu/-/ffi-rs-linux-x64-gnu-1.0.82.tgz#df4a49d8fe72d9ec351606d0b9e62a7e94486478"
-  integrity sha512-vBQZAfi1kGmPsLlHSOEmNAklPuGE1x2QD2c7Mmnlws9q/cfRZmA3sb3k6/jS9LDEClx2kKdTlx9c79LrYwtAkQ==
+"@yuuang/ffi-rs-linux-x64-gnu@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-x64-gnu/-/ffi-rs-linux-x64-gnu-1.0.86.tgz#198e938c3e83bdec01c9c08b074ea7c4156f1b4f"
+  integrity sha512-gERECxVxNXEVQ302BM1aKBYmUFzx4Z8ra4Knp3FCqPWD/vt/LSDCruHAfxm4DGt53eFEUAfyAtIikkE6I40RzA==
 
-"@yuuang/ffi-rs-linux-x64-musl@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-x64-musl/-/ffi-rs-linux-x64-musl-1.0.82.tgz#73d33d9c395fb8902c346feadb10de4da28a6df1"
-  integrity sha512-rZkAm6Z9vDq4ADB8vNA9/W1m4VRi/DZm+ONWStvwMoMenBPcn0HSg42ltOl4lp/EESYomHO3ScZZe3b+/fTTug==
+"@yuuang/ffi-rs-linux-x64-musl@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-linux-x64-musl/-/ffi-rs-linux-x64-musl-1.0.86.tgz#5c6da2d535cd79e06392e8210de924742b3394ce"
+  integrity sha512-2EcXosjib40M3GjDvfZ8fZWhTLljgowWQ2nLSj+O24y8kgAN6v/vJs636wiELz3BkiskuyDX4yF4PEN+7i+lZQ==
 
-"@yuuang/ffi-rs-win32-arm64-msvc@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-arm64-msvc/-/ffi-rs-win32-arm64-msvc-1.0.82.tgz#f3b3f5733cd67b502ef196b1ff56f72ae3557592"
-  integrity sha512-NYlqIZimUALqasd5pd4waY7nFr7Sr7nc+hrVR5r8BmLVMdjf32edHDhMoAnnmECAcf4+6TxqMAAVnIvNgvNzhw==
+"@yuuang/ffi-rs-win32-arm64-msvc@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-arm64-msvc/-/ffi-rs-win32-arm64-msvc-1.0.86.tgz#76137088d90a280c03a02b56833f43d6ed6bdc6c"
+  integrity sha512-2d+dtCXtVJTJvXneCKVo7pxmMEG7Il5iE6KGMk8sQ5eFGOQr2EuVMhZ43C2/vYukAQ0NoWjJXFZYxhYu6ZjbVg==
 
-"@yuuang/ffi-rs-win32-ia32-msvc@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-ia32-msvc/-/ffi-rs-win32-ia32-msvc-1.0.82.tgz#cc5cf8f4c2aabd5d16cd9c44005a6259179797f7"
-  integrity sha512-oJ+HnqKg49Zhva2HvN7V4r78kTkm0EmFi68Uyugw2r+3ss6DQEHlVOgr6SHx5HX3TxGqkPEk25pxj9DQXc+9mQ==
+"@yuuang/ffi-rs-win32-ia32-msvc@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-ia32-msvc/-/ffi-rs-win32-ia32-msvc-1.0.86.tgz#c91f25beae01288d73c958372c659d262e37e1ce"
+  integrity sha512-0GKE75rmaMd1PmWtWJQ/EcmAlCHJAlgeJwZHFgbf+j5vQ7FlIhTw25vCLYML9t8eGI3u1rPxY9lCfzHJPMrU8A==
 
-"@yuuang/ffi-rs-win32-x64-msvc@1.0.82":
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-x64-msvc/-/ffi-rs-win32-x64-msvc-1.0.82.tgz#74393e135da41705af43ff1240565d5eb18fc6a2"
-  integrity sha512-WEbFbNSja4ymeBiZaH9EDyefSlU+VjKbgPSoo4xhR8RdFRtOGm6e9WCAM0+LbvLzIJiYbrLf0EgWZn+MEtQuYQ==
+"@yuuang/ffi-rs-win32-x64-msvc@1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@yuuang/ffi-rs-win32-x64-msvc/-/ffi-rs-win32-x64-msvc-1.0.86.tgz#e0f821fd4f47da66f13f8777850ba38b342bca18"
+  integrity sha512-9ko2zIx8QI7rkzeAEqUSRj0m/qAkf20tbLjKDsMRiLQ8PVNYmzZuMAbOXshv7XGYsK2Qa1lrw+2ytmGqutE7kQ==
 
-ffi-rs@^1.0.82:
-  version "1.0.82"
-  resolved "https://registry.yarnpkg.com/ffi-rs/-/ffi-rs-1.0.82.tgz#9d1d32b18ced540b57ea4642e11d5d50e9b525cd"
-  integrity sha512-wCc6Lp0YGIfFeX78BKBCvwunxWE9mmkp6+1MkrtkCb14zKqf7OOZxOGLVFQZKhgy0X4E5lXrSaWB1x3o5J0fog==
+ffi-rs@^1.0.86:
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/ffi-rs/-/ffi-rs-1.0.86.tgz#a18dc58f18e32c2a78c61a930d8fb370b98449f1"
+  integrity sha512-bUbGQnP3l0IZuOabPOckT67MGdQzcRdlNoJE8WB7m7anyuxqyV1pEG2Im9w1MPQQ2/6xaYEe6uTBjHUlxsthgg==
   optionalDependencies:
-    "@yuuang/ffi-rs-darwin-arm64" "1.0.82"
-    "@yuuang/ffi-rs-darwin-x64" "1.0.82"
-    "@yuuang/ffi-rs-linux-arm64-gnu" "1.0.82"
-    "@yuuang/ffi-rs-linux-arm64-musl" "1.0.82"
-    "@yuuang/ffi-rs-linux-x64-gnu" "1.0.82"
-    "@yuuang/ffi-rs-linux-x64-musl" "1.0.82"
-    "@yuuang/ffi-rs-win32-arm64-msvc" "1.0.82"
-    "@yuuang/ffi-rs-win32-ia32-msvc" "1.0.82"
-    "@yuuang/ffi-rs-win32-x64-msvc" "1.0.82"
+    "@yuuang/ffi-rs-darwin-arm64" "1.0.86"
+    "@yuuang/ffi-rs-darwin-x64" "1.0.86"
+    "@yuuang/ffi-rs-linux-arm64-gnu" "1.0.86"
+    "@yuuang/ffi-rs-linux-arm64-musl" "1.0.86"
+    "@yuuang/ffi-rs-linux-x64-gnu" "1.0.86"
+    "@yuuang/ffi-rs-linux-x64-musl" "1.0.86"
+    "@yuuang/ffi-rs-win32-arm64-msvc" "1.0.86"
+    "@yuuang/ffi-rs-win32-ia32-msvc" "1.0.86"
+    "@yuuang/ffi-rs-win32-x64-msvc" "1.0.86"

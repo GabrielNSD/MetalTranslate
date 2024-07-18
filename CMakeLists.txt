@@ -1,3 +1,47 @@
+#[==[
+cmake_minimum_required(VERSION 3.10)
+
+project(MetalTranslate)
+
+include(ExternalProject)
+
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+
+ExternalProject_Add(CTranslate2
+    GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
+    GIT_TAG v4.3.1
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=COMP
+)
+
+ExternalProject_Add(Tokenizer
+    GIT_REPOSITORY https://github.com/OpenNMT/Tokenizer
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+)
+
+include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(metaltranslate src/main.cpp)
+
+set(TARGET_H
+    src/MetalTranslate.h
+    src/MetalTranslateConfig.h
+    src/metal_api.h
+)
+
+target_sources(metaltranslate PRIVATE src/MetalTranslate.cpp src/metal_api.cpp)
+
+#add_subdirectory(third_party/CTranslate2/)
+target_link_libraries(metaltranslate ctranslate2)
+
+##add_subdirectory(third_party/Tokenizer/)
+target_link_libraries(metaltranslate OpenNMTTokenizer)
+
+#target_link_libraries(metaltranslate cpu_features)
+]==]
 cmake_minimum_required(VERSION 3.13)
 
 project(MetalTranslate)
@@ -64,7 +108,7 @@ else()
         PREFIX third_party/CTranslate2
         GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2
         GIT_TAG v4.3.1
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_PROJECT_ctranslate2_INCLUDE=${CMAKE_SOURCE_DIR}/fix_ctranslate2.cmake -DWITH_MKL=OFF -DWITH_DNNL=ON -DOPENMP_RUNTIME=NONE
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DWITH_MKL=OFF -DMKL_CBWR=COMPATIBLE -DWITH_DNNL=ON -DOPENMP_RUNTIME=COMP
     )
 endif()
 
@@ -95,18 +139,18 @@ add_library(metaltranslate SHARED
     src/metal_api.cpp
 )
 
-set(TARGET_H
-    src/MetalTranslate.h
-    src/MetalTranslateConfig.h
-    src/metal_api.h
-)
-
 target_include_directories(metaltranslate PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${EXTERNAL_INSTALL_LOCATION}/include
 )
 
+# target_compile_definitions(metaltranslate PRIVATE METALTRANSLATE_EXPORTS)
+
 add_dependencies(metaltranslate CTranslate2 Tokenizer)
+
+if(WIN32)
+    add_definitions(-DMETALTRANSLATE_EXPORTS)
+endif()
 
 message("DIRS: ")
 message(STATUS "${EXTERNAL_INSTALL_LOCATION}")
