@@ -37,9 +37,8 @@ namespace MetalTranslate
       ctranslate2::Translator translator(this->_config.ModelPath + "model", ctranslate2::Device::CPU);
 
       const std::vector<std::vector<std::string>> batch = {tokens};
-      const std::string target_prefix_str = "__" + target_code + "__";
       const std::vector<std::vector<std::string>> target_prefix = {
-          {target_prefix_str}};
+          {"__" + target_code + "__"}};
       const size_t max_batch_size = 1024;
 
       const ctranslate2::TranslationOptions options = ctranslate2::TranslationOptions();
@@ -56,10 +55,10 @@ namespace MetalTranslate
       // __es__ Traducción de texto con MetalTranslate
       // -> Traducción de texto con MetalTranslate
 
-      size_t pos = result.find(target_prefix_str);
+      size_t pos = result.find(" ");
 
       if (pos != std::string::npos) {
-        result.erase(pos, target_prefix_str.length());
+        result.erase(0, pos + 1);
       }
 
       return result;
