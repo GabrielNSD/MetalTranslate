@@ -108,8 +108,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
-          tar xf .\oneDNN-3.5.tar.gz
-          cd .\oneDNN-3.5\
+          tar xf .\v3.5.tar.gz
+          cd .\v3.5\
           cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
           cmake --build . --config Release --target install --parallel 6  
 
@@ -148,7 +148,7 @@ jobs:
             export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
             export PATH="$ICU_ROOT/bin:$PATH"
           fi
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 6
 
       - name: Build Windows
         if: runner.os == 'Windows'
@@ -159,7 +159,7 @@ jobs:
           echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
           $env:CMAKE_PREFIX_PATH = "C:\Program Files (x86)\oneDNN"
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 6
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}

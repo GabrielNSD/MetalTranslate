@@ -36,12 +36,10 @@ namespace MetalTranslate
 
       ctranslate2::Translator translator(this->_config.ModelPath + "model", ctranslate2::Device::CPU);
 
-      //ctranslate2::init_profiling(ctranslate2::Device::CPU, translator.num_replicas());
-
       const std::vector<std::vector<std::string>> batch = {tokens};
-      //const std::vector<std::vector<std::string>> batch = { {"__en__", "Hello", "world"} };
+      const std::string target_prefix_str = "__" + target_code + "__";
       const std::vector<std::vector<std::string>> target_prefix = {
-          {"__" + target_code + "__"}};
+          {target_prefix_str}};
       const size_t max_batch_size = 1024;
 
       const ctranslate2::TranslationOptions options = ctranslate2::TranslationOptions();
@@ -50,7 +48,6 @@ namespace MetalTranslate
       //const std::vector<ctranslate2::TranslationResult> results =
           //std::move(translator.translate_batch(batch, target_prefix, options, max_batch_size));
 
-      //ctranslate2::dump_profiling(std::cerr);
       
       const std::vector<std::string> translatedtokens = results[0].output();
 
@@ -58,10 +55,14 @@ namespace MetalTranslate
       // Remove target prefix
       // __es__ Traducción de texto con MetalTranslate
       // -> Traducción de texto con MetalTranslate
-      std::string final_result = result.substr(7);
 
+      size_t pos = result.find(target_prefix_str);
 
-      return final_result;
+      if (pos != std::string::npos) {
+        result.erase(pos, target_prefix_str.length());
+      }
+
+      return result;
     }
     catch (const std::exception &e)
     {
