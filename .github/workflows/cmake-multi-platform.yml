@@ -109,7 +109,8 @@ jobs:
         run: |
           curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
           tar xf .\v3.5.tar.gz
-          cd .\v3.5\
+          ls
+          cd oneDNN-3.5
           cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
           cmake --build . --config Release --target install --parallel 6  
 
