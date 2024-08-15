@@ -112,7 +112,7 @@ jobs:
           ls
           cd oneDNN-3.5
           cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
-          cmake --build . --config Release --target install --parallel 6  
+          cmake --build . --config Release --target install --parallel 6
 
       - name: Configure CMake Unix
         if: runner.os != 'Windows'
@@ -125,7 +125,7 @@ jobs:
             export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
             export PATH="$ICU_ROOT/bin:$PATH"
           fi
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWITH_MKL=OFF -DOPENMP_RUNTIME=NONE -DWITH_DNNL=ON -S ${{ github.workspace }}
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
 
       - name: Configure CMake Windows
         if: runner.os == 'Windows'
