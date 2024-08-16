@@ -3,7 +3,6 @@
 #include <ctranslate2/translator.h>
 #include <onmt/Tokenizer.h>
 
-#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>

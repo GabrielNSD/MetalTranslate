@@ -8,8 +8,6 @@
 #define METALTRANSLATE_API
 #endif
 
-#include <string>
-
 #include "MetalTranslate.h"
 
 #ifdef __cplusplus
