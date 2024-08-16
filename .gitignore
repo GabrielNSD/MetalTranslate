@@ -39,3 +39,4 @@ build/
 nodejs/node_modules
 
 .vs
+.vscode
