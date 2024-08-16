@@ -27,10 +27,6 @@ std::string MetalTranslate::Translate(std::string source,
                                       std::string source_code,
                                       std::string target_code) {
     try {
-        std::cout << "c++ model path: " << this->_config.ModelPath << std::endl;
-
-        std::cout << "model type: " << this->_config.Type << std::endl;
-
         std::string source_prefix;
         std::string target_prefix_str;
 
@@ -67,7 +63,7 @@ std::string MetalTranslate::Translate(std::string source,
         std::vector<std::string> tempBatch;
         std::vector<std::string> sentence;
 
-        int max_batch_size = 150;  // TODO: receive this value as a parameter
+        const int max_batch_size = this->_config.MaxTokens;
 
         if (tokens.size() <= max_batch_size - 1) {
             tokens.insert(tokens.begin(), source_prefix);
@@ -93,61 +89,25 @@ std::string MetalTranslate::Translate(std::string source,
             sentence.clear();
         }
 
-        // std::string source_prefix = "eng_Latn";  //"[en_XX]";  // "__" + source_code + "__";
-        tokens.insert(tokens.begin(), source_prefix);
-
-        std::ofstream outFile("output_fr.txt");
-
-        // Check if the file is open
-        if (outFile.is_open()) {
-            // Write the vector of strings to the file
-            for (const std::string &str : tokens) {
-                outFile << str << std::endl;
-            }
-            // Close the file
-            outFile.close();
-            std::cout << "Data written to file successfully." << std::endl;
-        } else {
-            std::cerr << "Unable to open file for writing." << std::endl;
-        }
-
         // CTranslate2
         const size_t num_translators = 1;
         const size_t num_threads_per_translator = 1;  // Unused with DNNL
 
         ctranslate2::Translator translator(this->_config.ModelPath + "model", ctranslate2::Device::CPU);
 
-        std::cout << "translator instantiated" << std::endl;
-
         const std::vector<std::vector<std::string>> batch = {tokens};
         const std::vector<std::vector<std::string>> target_prefix = {{target_prefix_str}};
-        // {"[pt_XX]"}};
-        //{"__" + target_code + "__"}};
-        // const size_t max_batch_size = 0;
 
         ctranslate2::TranslationOptions options = ctranslate2::TranslationOptions();
         // fairseq models need beam_size = 5
         options.beam_size = 5;
-        // options.length_penalty = 1.0;
-        options.max_input_length = 256;
-        options.max_decoding_length = 65535;
-        // options.num_hypotheses = 5;
-        // options.return_scores = true;
-        // options.return_attention = false;
-        // options.return_alternatives = false;
-        // options.sampling_topk = 1;
-        // options.sampling_topp = 1.0;
-        // options.sampling_temperature = 1.0;
-        // options.use_vmap = true;
-
-        std::cout << "MAX INPUT LENGTH: " << options.max_input_length << std::endl;
-        std::cout << "DECODING LENGTH: " << options.max_decoding_length << std::endl;
+        options.max_input_length = max_batch_size + 1;
+        options.max_decoding_length = max_batch_size * 2;
 
         std::string concatenatedResult;
 
         for (const std::vector<std::string> &batch : batches) {
-            std::cout << "BATCH SIZE: " << batch.size() << std::endl;
-            const std::vector<ctranslate2::TranslationResult> results = translator.translate_batch({batch}, target_prefix, options, 64);
+            const std::vector<ctranslate2::TranslationResult> results = translator.translate_batch({batch}, target_prefix, options, 0);
             const std::vector<std::string> translatedtokens = results[0].output();
             std::string result = std::move(tokenizer.detokenize(translatedtokens));
 
@@ -164,39 +124,6 @@ std::string MetalTranslate::Translate(std::string source,
             concatenatedResult += result;
         }
 
-        // const std::vector<ctranslate2::TranslationResult> results = translator.translate_batch(batches, target_prefix, options, 64);
-        // // const std::vector<ctranslate2::TranslationResult> results =
-        // // std::move(translator.translate_batch(batch, target_prefix, options, max_batch_size));
-
-        // const std::vector<std::string> translatedtokens = results[0].output();
-
-        // std::ofstream outFile1("translated_fr.txt");
-
-        // // Check if the file is open
-        // if (outFile1.is_open()) {
-        //     // Write the vector of strings to the file
-        //     for (const std::string &str : translatedtokens) {
-        //         outFile1 << str << std::endl;
-        //     }
-        //     // Close the file
-        //     outFile1.close();
-        //     std::cout << "Data written to file successfully." << std::endl;
-        // } else {
-        //     std::cerr << "Unable to open file for writing." << std::endl;
-        // }
-
-        // std::string result = std::move(tokenizer.detokenize(translatedtokens));
-        // // Remove target prefix
-        // // __es__ Traducción de texto con MetalTranslate
-        // // -> Traducción de texto con MetalTranslate
-
-        // size_t pos = result.find(" ");
-
-        // if (pos != std::string::npos) {
-        //     result.erase(0, pos + 1);
-        // }
-
-        // return result;
         return concatenatedResult;
     } catch (const std::exception &e) {
         std::cerr << "Exception caught in Translate method: " << e.what() << std::endl;

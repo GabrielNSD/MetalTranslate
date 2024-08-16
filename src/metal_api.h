@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 // Define a function to create a MetalTranslate object
-METALTRANSLATE_API void* create_metal_translate(const char* model_path, const MetalTranslate::ModelType model_type);
+METALTRANSLATE_API void* create_metal_translate(const char* model_path, const MetalTranslate::ModelType model_type, const int max_tokens);
 
 // Define a function to translate text
 METALTRANSLATE_API char* translate(void* translator, const char* source,

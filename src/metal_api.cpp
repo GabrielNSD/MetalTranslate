@@ -6,8 +6,8 @@
 
 class MetalTranslateWrapper {
 public:
-    MetalTranslateWrapper(const std::string& model_path, const MetalTranslate::ModelType model_type)
-        : config(model_path, model_type), translator(config) {
+    MetalTranslateWrapper(const std::string& model_path, const MetalTranslate::ModelType model_type, const int max_tokens)
+        : config(model_path, model_type, max_tokens), translator(config) {
     }
 
     std::string Translate(const std::string& source, const std::string& source_code, const std::string& target_code) {
@@ -20,8 +20,8 @@ private:
 };
 
 extern "C" {
-void* create_metal_translate(const char* model_path, const MetalTranslate::ModelType model_type) {
-    return new MetalTranslateWrapper(model_path, model_type);
+void* create_metal_translate(const char* model_path, const MetalTranslate::ModelType model_type, const int max_tokens) {
+    return new MetalTranslateWrapper(model_path, model_type, max_tokens);
 }
 
 char* translate(void* translator, const char* source, const char* source_code, const char* target_code) {
