@@ -128,7 +128,7 @@ jobs:
         
       - run: |
           ls
-          cd icu4c-74_2-src
+          cd icu4c-74_2-src\icu
           ls
           msbuild .\source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
         if: runner.os == 'Windows'
