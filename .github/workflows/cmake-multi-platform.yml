@@ -129,6 +129,7 @@ jobs:
           ls
           cd icu4c-74_2-Win64-MSVC2019
           msbuild source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
+        if: runner.os == 'Windows'
 
       - name: Configure CMake Unix
         if: runner.os != 'Windows'
