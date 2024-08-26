@@ -124,7 +124,8 @@ jobs:
       - name: Install ICU on Windows
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
-        run: |
+        
+      - run: |
           ls
           cd icu4c-74_2-Win64-MSVC2019
           msbuild source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
@@ -144,6 +145,7 @@ jobs:
 
       - name: Configure CMake Windows
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
           $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
           $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
