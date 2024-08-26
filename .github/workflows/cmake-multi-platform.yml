@@ -149,7 +149,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;c:\icu\include;$env:INCLUDE"
           $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
           $env:PATH = "C:\icu\bin;$env:PATH"
           echo "LIB: $env:LIB"
