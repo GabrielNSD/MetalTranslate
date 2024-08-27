@@ -104,16 +104,6 @@ jobs:
           echo "oneDNN include directory: $(brew --prefix onednn)/include"
           echo "oneDNN library directory: $(brew --prefix onednn)/lib"
 
-      - name: Install onednn on Windows
-        if: runner.os == 'Windows'
-        run: |
-          curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
-          tar xf .\v3.5.tar.gz
-          ls
-          cd oneDNN-3.5
-          cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
-          cmake --build . --config Release --target install --parallel 6
-
       - name: Download ICU on Windows
         if: runner.os == 'Windows'
         run: |
@@ -132,6 +122,25 @@ jobs:
           ls
           msbuild .\source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
         if: runner.os == 'Windows'
+      
+      - name: Check ICU dir on windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "ls c:\icu"
+          ls c:\icu
+          echo "ls c:\icu\bin64"
+          ls c:\icu\bin64
+      
+      - name: Install onednn on Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
+          tar xf .\v3.5.tar.gz
+          ls
+          cd oneDNN-3.5
+          cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
+          cmake --build . --config Release --target install --parallel 6
 
       - name: Configure CMake Unix
         if: runner.os != 'Windows'
@@ -151,8 +160,8 @@ jobs:
         shell: pwsh
         run: |
           $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;c:\icu\include;$env:INCLUDE"
-          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
-          $env:PATH = "C:\icu\bin;$env:PATH"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;C:\icu\lib64;$env:LIB"
+          $env:PATH = "C:\icu\bin64;$env:PATH"
           echo "LIB: $env:LIB"
           echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
@@ -175,12 +184,13 @@ jobs:
       - name: Build Windows
         if: runner.os == 'Windows'
         run: |
-          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;$env:INCLUDE"
-          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;$env:LIB"
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;c:\icu\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;C:\icu\lib64;$env:LIB"
+          $env:PATH = "C:\icu\bin64;$env:PATH"
           echo "LIB: $env:LIB"
           echo "INCLUDE: $env:INCLUDE"
           echo "Build type: ${{ matrix.build_type }}"
-          $env:CMAKE_PREFIX_PATH = "C:\Program Files (x86)\oneDNN"
+          $env:CMAKE_PREFIX_PATH = "C:\Program Files (x86)\oneDNN;C:\icu;C:\icu\bin64"
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 6
 
       - name: Test
