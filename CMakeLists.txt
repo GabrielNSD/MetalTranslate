@@ -218,7 +218,7 @@ elseif(UNIX)
     )
 else()
     add_custom_command(TARGET metaltranslate POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:metaltranslate> $<TARGET_RUNTIME_DLLS:metaltranslate>
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE_DIR:metaltranslate> $<TARGET_RUNTIME_DLLS:metaltranslate>
         COMMAND dir /s $<TARGET_FILE_DIR:metaltranslate>
         COMMAND_EXPAND_LISTS
     )
