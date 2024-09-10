@@ -63,12 +63,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set reusable strings
+      - name: Set reusable strings on unix
+        if: runner.os != 'Windows'
         # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
         id: strings
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Set reusable strings on Windows
+        if: runner.os == 'Windows'
+        if: strings
+        shell: pwsh
+        run: |
+          echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
 
       - name: Install oneDNN
         if: runner.os == 'macOS'
@@ -226,18 +234,33 @@ jobs:
       - name: Create ZIP containing .dll files
         if: runner.os == 'Windows'
         run: |
-          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
+          New-Item -Path "${{ steps.strings.outputs.build-output-dir }}\libs" -ItemType Directory
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\bin\Release\metaltranslate.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\external\bin\ctranslate2.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\external\bin\OpenNMTTokenizer.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Copy-Item -Path "c:\icu\bin64\icudt74.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Copy-Item -Path "c:\icu\bin64\icuuc74.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Copy-Item -Path "c:\Program Files (x86)\oneDNN\bin\dnnl.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\libs\" -Force
+          Compress-Archive -Path "${{ steps.strings.outputs.build-output-dir }}\libs\" -DestinationPath "${{ steps.strings.outputs.build-output-dir }}\libmetaltranslateWindows.zip"
 
-      - name: Upload ZIP artifact
+
+      - name: Upload ZIP artifact for macOS
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: libmetaltranslateMac
           path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslateMac.zip
 
-      - name: Upload ZIP artifact
+      - name: Upload ZIP artifact for Linux
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: libmetaltranslateLinux
           path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslateLinux.zip
+
+      - name: Upload ZIP artifact for Windows
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: libmetaltranslateMac
+          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslateWindows.zip
