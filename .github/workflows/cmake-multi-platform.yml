@@ -263,6 +263,8 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -281,6 +283,16 @@ jobs:
       - name: Check current location
         run: ls
       - name: Move Artifacts
-        run: mv ./artifacts ./lib
+        run: mv ./artifacts ./nodejs/lib
       - name: Check after move
         run: ls
+      
+      - name: Initialize Git user
+        run: |
+          git config --global user.email "gabriel@test.email"
+          git config --global user.name "Release Workflow"
+      - name: Initialise the NPM config
+        run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
