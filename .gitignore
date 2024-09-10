@@ -37,6 +37,9 @@ build/
 *.app
 
 nodejs/node_modules
+nodejs/lib
 
 .vs
 .vscode
+
+*.npmrc

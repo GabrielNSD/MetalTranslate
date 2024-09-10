@@ -5,27 +5,28 @@
  * @module metal-translator
  */
 
-const { load, DataType, open, close, define } = require("ffi-rs");
-const { platform } = require("os");
+const {  DataType, open, define } = require("ffi-rs");
+const { platform: platformOS } = require("os");
 const path = require("path");
 
-console.log(process.platform);
+const platform = platformOS()
 
-let dynamicLib;
-switch (process.platform) {
-  case "linux":
-    dynamicLib = "./libmetaltranslate.so";
-    break;
-  case "darwin":
-    dynamicLib = "./libmetaltranslate.dylib";
-    break;
-  case "win32":
-    dynamicLib = path.join(__dirname, "metaltranslate.dll");
-    break;
+const libPath = path.join(__dirname, 'lib')
+
+let dynamicLib
+switch (platform) {
+  case 'linux':
+    dynamicLib = path.join(libPath, 'linux-x64', './libmetaltranslate.so')
+    break
+  case 'darwin':
+    dynamicLib = path.join(libPath, 'darwin-x64', './libmetaltranslate.dylib') // Ensure to use npm_config_arch=x64 yarn packages:reinstall to run in dev mode
+    break
+  case 'win32':
+    dynamicLib = path.join(libPath, 'win32-x64', 'metaltranslate.dll')
+    break
   default:
-    console.error("OS Not supported");
-    process.exit(1);
-    break;
+    console.error('OS Not supported')
+    process.exit(1)
 }
 
 console.log("dynamiclib: ", dynamicLib);
