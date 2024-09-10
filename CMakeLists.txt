@@ -101,7 +101,6 @@ target_include_directories(metaltranslate PRIVATE
 )
 
 # target_compile_definitions(metaltranslate PRIVATE METALTRANSLATE_EXPORTS)
-
 add_dependencies(metaltranslate CTranslate2 Tokenizer)
 
 if(WIN32)
@@ -165,15 +164,17 @@ if(APPLE)
 elseif(UNIX)
     add_custom_command(TARGET metaltranslate POST_BUILD
 
-        COMMAND ${CMAKE_COMMAND} -E copy ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.so $<TARGET_FILE_DIR:metaltranslate>/libctranslate2.so.4
+        COMMAND ${CMAKE_COMMAND} -E copy ${EXTERNAL_INSTALL_LOCATION}/lib/libctranslate2.so $<TARGET_FILE_DIR:metaltranslate>/libctranslate2.so
         COMMAND ${CMAKE_COMMAND} -E copy ${EXTERNAL_INSTALL_LOCATION}/lib/libOpenNMTTokenizer.so $<TARGET_FILE_DIR:metaltranslate>
         COMMAND ${CMAKE_COMMAND} -E copy ${LIBDNNL_SO} $<TARGET_FILE_DIR:metaltranslate>
 
-        COMMAND patchelf --replace-needed libdnnl.so.3 '$$ORIGIN/libdnnl.so' ${CMAKE_CURRENT_BINARY_DIR}/libctranslate2.so.4
+        COMMAND patchelf --replace-needed libdnnl.so.3 '$$ORIGIN/libdnnl.so' ${CMAKE_CURRENT_BINARY_DIR}/libctranslate2.so
+        COMMAND patchelf --replace-needed libctranslate2.so.4 'libctranslate2.so' ${CMAKE_CURRENT_BINARY_DIR}/libmetaltranslate.so
         COMMENT "Adjusting ctranslate2 rpath and copying shared objects"
     )
 else()
     add_custom_command(TARGET metaltranslate POST_BUILD
+
         # Check permissions of the target directory
         COMMAND ${CMAKE_COMMAND} -E echo "Checking permissions of target directory:"
         COMMAND ${CMAKE_COMMAND} -E echo "Directory: $<TARGET_FILE_DIR:metaltranslate>"
