@@ -115,14 +115,14 @@ jobs:
       - name: Install ICU on Windows
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
-        
+
       - run: |
           ls
           cd c:\icu
           ls
           msbuild .\source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
         if: runner.os == 'Windows'
-      
+
       - name: Check ICU dir on windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -131,7 +131,7 @@ jobs:
           ls c:\icu
           echo "ls c:\icu\bin64"
           ls c:\icu\bin64
-      
+
       - name: Install onednn on Windows
         if: runner.os == 'Windows'
         run: |
@@ -218,10 +218,15 @@ jobs:
           mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
           cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.so ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so.4 ${{ steps.strings.outputs.build-output-dir }}/libs/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/libs/
           cd ${{ steps.strings.outputs.build-output-dir }}
           zip -r libmetaltranslateLinux.zip libs
+
+      - name: Create ZIP containing .dll files
+        if: runner.os == 'Windows'
+        run: |
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
 
       - name: Upload ZIP artifact
         if: runner.os == 'macOS'
