@@ -73,7 +73,7 @@ jobs:
 
       - name: Set reusable strings on Windows
         if: runner.os == 'Windows'
-        if: strings
+        id: strings
         shell: pwsh
         run: |
           echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
