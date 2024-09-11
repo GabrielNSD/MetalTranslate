@@ -1,6 +1,6 @@
 {
   "name": "@gabrielnsd/translator",
-  "version": "0.0.2",
+  "version": "0.2.0",
   "description": "Node bindings for machine translation",
   "publishConfig": {
     "access": "public"
