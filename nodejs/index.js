@@ -74,7 +74,7 @@ class Translator {
    */
   constructor(modelPath, modelType, maxTokens = 32) {
     this.translator = metal.create_metal_translate([
-      modelPath,
+      modelPath + path.sep,
       ModelTypes[modelType],
       maxTokens,
     ]);
