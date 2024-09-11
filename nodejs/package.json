@@ -1,6 +1,6 @@
 {
   "name": "@gabrielnsd/translator",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Node bindings for machine translation",
   "publishConfig": {
     "access": "public"
@@ -11,7 +11,12 @@
   },
   "main": "index.js",
   "license": "MIT",
-  "files": ["index.js", "/lib", "package.json", "README.md"],
+  "files": [
+    "index.js",
+    "/lib",
+    "package.json",
+    "README.md"
+  ],
   "dependencies": {
     "ffi-rs": "^1.0.91"
   },
