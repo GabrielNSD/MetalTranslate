@@ -307,7 +307,7 @@ jobs:
       
       - name: Initialize Git user
         run: |
-          git config --global user.email "gabriel@test.email"
+          git config --global user.email "release@cantoo.fr"
           git config --global user.name "Release Workflow"
       - name: Initialise the NPM config
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN

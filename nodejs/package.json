@@ -1,5 +1,5 @@
 {
-  "name": "@gabrielnsd/translator",
+  "name": "@cantoo/translator",
   "version": "0.2.2",
   "description": "Node bindings for machine translation",
   "publishConfig": {
