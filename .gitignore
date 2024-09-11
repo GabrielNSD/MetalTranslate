@@ -20,7 +20,7 @@ build/
 *.so
 *.dylib
 *.dll
-
+*.so.*
 # Fortran module files
 *.mod
 *.smod
@@ -35,3 +35,11 @@ build/
 *.exe
 *.out
 *.app
+
+nodejs/node_modules
+nodejs/lib
+
+.vs
+.vscode
+
+*.npmrc

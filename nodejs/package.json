@@ -1,0 +1,23 @@
+{
+  "name": "@gabrielnsd/translator",
+  "version": "0.0.1",
+  "description": "Node bindings for machine translation",
+  "scripts": {
+    "dev": "node index.js",
+    "release": "release-it"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ffi-rs": "^1.0.91"
+  },
+  "devDependencies": {
+    "release-it": "^17.6.0"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

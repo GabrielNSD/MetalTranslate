@@ -1,12 +1,9 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
 
 on:
   push:
-    branches: ["node-ffi-mac"]
-  pull_request:
     branches: ["main"]
+  pull_request: null
   workflow_dispatch:
     inputs:
       logLevel:
@@ -30,34 +27,32 @@ jobs:
       # Set up a matrix to run the following 3 configurations:
       # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
       # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
-      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+      # 3. <macOS, Release, latest Clang compiler toolchain on the macos-13 runner image, default generator>
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [macos-13]
+        os: [macos-13, ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc]
         include:
-          # - os: windows-latest
-          #   c_compiler: cl
-          #   cpp_compiler: cl
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            build_type: Release
           - os: macos-13
             arch: x64
             c_compiler: gcc
             cpp_compiler: g++
-          # - os: ubuntu-latest
-          #   c_compiler: gcc
-          #   cpp_compiler: g++
-          # - os: ubuntu-latest
-          #   c_compiler: clang
-          #   cpp_compiler: clang++
-        # exclude:
-        # - os: windows-latest
-        #   c_compiler: gcc
-        # - os: windows-latest
-        #   c_compiler: clang
-        # - os: ubuntu-latest
-        #   c_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: cl
 
     steps:
       - uses: actions/checkout@v4
@@ -67,43 +62,134 @@ jobs:
         id: strings
         shell: bash
         run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-      - name: Test arch
-        run: arch
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+          else
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install oneDNN
+        if: runner.os == 'macOS'
         run: brew install onednn
 
-      - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        # run: >
-        #   cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        #   -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        #   -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        #   -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        #   -S ${{ github.workspace }}
+      - name: Add Oracular repository
+        if: runner.os == 'Linux'
         run: |
-          export ICU_ROOT=$(brew --prefix icu4c)
-          export CMAKE_PREFIX_PATH=$ICU_ROOT
-          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
-          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
-          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
-          export PATH="$ICU_ROOT/bin:$PATH"
+          echo "deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/oracular.list
+
+      - name: Update package lists
+        if: runner.os == 'Linux'
+        run: sudo apt update
+
+      - name: Install libdnnl-dev from oracular
+        if: runner.os == 'Linux'
+        run: sudo apt install -t oracular -y libdnnl-dev
+
+      - name: Pin libdnnl-dev
+        if: runner.os == 'Linux'
+        run: |
+          echo "Package: libdnnl-dev" | sudo tee /etc/apt/preferences.d/pin-oracular-package
+          echo "Pin: release n=oracular" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
+          echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/pin-oracular-package
+
+      - name: Verify dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew list icu4c
+          brew list onednn
+          echo "ICU4C include directory: $(brew --prefix icu4c)/include"
+          echo "ICU4C library directory: $(brew --prefix icu4c)/lib"
+          echo "oneDNN include directory: $(brew --prefix onednn)/include"
+          echo "oneDNN library directory: $(brew --prefix onednn)/lib"
+
+      - name: Download ICU on Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl.exe -L -O https://github.com/unicode-org/icu/releases/download/release-74-2/icu4c-74_2-src.zip --ssl-no-revoke
+          ls
+          Expand-Archive -Path .\icu4c-74_2-src.zip -DestinationPath c:\
+          ls
+
+      - name: Install ICU on Windows
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - run: |
+          ls
+          cd c:\icu
+          ls
+          msbuild .\source\allinone\allinone.sln /p:Configuration=Release /p:Platform=x64 /p:SkipUWP=true
+        if: runner.os == 'Windows'
+
+      - name: Check ICU dir on windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "ls c:\icu"
+          ls c:\icu
+          echo "ls c:\icu\bin64"
+          ls c:\icu\bin64
+
+      - name: Install onednn on Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl.exe -L -O https://github.com/oneapi-src/oneDNN/archive/refs/tags/v3.5.tar.gz --ssl-no-revoke
+          tar xf .\v3.5.tar.gz
+          ls
+          cd oneDNN-3.5
+          cmake -DCMAKE_BUILD_TYPE=Release -DONEDNN_LIBRARY_TYPE=SHARED -DONEDNN_BUILD_EXAMPLES=OFF -DONEDNN_BUILD_TESTS=OFF -DONEDNN_ENABLE_WORKLOAD=INFERENCE -DONEDNN_ENABLE_PRIMITIVE="CONVOLUTION;REORDER" -DONEDNN_BUILD_GRAPH=OFF .
+          cmake --build . --config Release --target install --parallel 6
+
+      - name: Configure CMake Unix
+        if: runner.os != 'Windows'
+        run: |
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            export ICU_ROOT=$(brew --prefix icu4c)
+            export CMAKE_PREFIX_PATH=$ICU_ROOT
+            export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+            export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+            export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+            export PATH="$ICU_ROOT/bin:$PATH"
+          fi
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
 
-      - name: Build
+      - name: Configure CMake Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;c:\icu\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;C:\icu\lib64;$env:LIB"
+          $env:PATH = "C:\icu\bin64;$env:PATH"
+          echo "LIB: $env:LIB"
+          echo "INCLUDE: $env:INCLUDE"
+          echo "Build type: ${{ matrix.build_type }}"
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
+
+      - name: Build Unix
+        if: runner.os != 'Windows'
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         run: |
-          export ICU_ROOT=$(brew --prefix icu4c)
-          export CMAKE_PREFIX_PATH=$ICU_ROOT
-          export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
-          export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
-          export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
-          export PATH="$ICU_ROOT/bin:$PATH"
-          echo $PATH
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            export ICU_ROOT=$(brew --prefix icu4c)
+            export CMAKE_PREFIX_PATH=$ICU_ROOT
+            export PKG_CONFIG_PATH=$ICU_ROOT/lib/pkgconfig:$PKG_CONFIG_PATH
+            export LDFLAGS="-L$ICU_ROOT/lib $LDFLAGS"
+            export CPPFLAGS="-I$ICU_ROOT/include $CPPFLAGS"
+            export PATH="$ICU_ROOT/bin:$PATH"
+          fi
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 6
+
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: |
+          $env:INCLUDE = "C:\Program Files (x86)\oneDNN\include;c:\icu\include;$env:INCLUDE"
+          $env:LIB = "C:\Program Files (x86)\oneDNN\lib;C:\Program Files (x86)\oneDNN\bin;C:\icu\lib64;$env:LIB"
+          $env:PATH = "C:\icu\bin64;$env:PATH"
+          echo "LIB: $env:LIB"
+          echo "INCLUDE: $env:INCLUDE"
+          echo "Build type: ${{ matrix.build_type }}"
+          $env:CMAKE_PREFIX_PATH = "C:\Program Files (x86)\oneDNN;C:\icu;C:\icu\bin64"
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 6
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
@@ -111,20 +197,103 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: ctest --build-config ${{ matrix.build_type }}
 
-      - name: Create ZIP file containing .dylib files
+      - name: Copy necessary .dylib files
+        if: runner.os == 'macOS'
         run: |
-          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/libs
-          cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.4.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
-          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/libs/
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/lib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.3.5.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/libdnnl.3.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicuuc.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/libicuuc.74.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libicudata.74.2.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/libicudata.74.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libctranslate2.4.3.1.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/libctranslate2.4.dylib
+          cp ${{ steps.strings.outputs.build-output-dir }}/external/lib/libOpenNMTTokenizer.dylib ${{ steps.strings.outputs.build-output-dir }}/lib/
           cd ${{ steps.strings.outputs.build-output-dir }}
-          zip -r libmetaltranslate.zip libs
 
-      - name: Upload ZIP artifact
+      - name: Copy necessary .so files
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}/lib
+          cp ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.so ${{ steps.strings.outputs.build-output-dir }}/lib/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libdnnl.so ${{ steps.strings.outputs.build-output-dir }}/lib/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libctranslate2.so ${{ steps.strings.outputs.build-output-dir }}/lib/
+          cp ${{ steps.strings.outputs.build-output-dir }}/libOpenNMTTokenizer.so ${{ steps.strings.outputs.build-output-dir }}/lib/
+          cd ${{ steps.strings.outputs.build-output-dir }}
+
+      - name: Copy necessary .dll files
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -Path "${{ steps.strings.outputs.build-output-dir }}\lib" -ItemType Directory
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\bin\Release\metaltranslate.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\external\bin\ctranslate2.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+          Copy-Item -Path "${{ steps.strings.outputs.build-output-dir }}\external\bin\OpenNMTTokenizer.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+          Copy-Item -Path "c:\icu\bin64\icudt74.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+          Copy-Item -Path "c:\icu\bin64\icuuc74.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+          Copy-Item -Path "c:\Program Files (x86)\oneDNN\bin\dnnl.dll" -Destination "${{ steps.strings.outputs.build-output-dir }}\lib\" -Force
+
+
+      - name: Upload ZIP artifact for macOS
+        if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
-          name: libmetaltranslate
-          path: ${{ steps.strings.outputs.build-output-dir }}/libmetaltranslate.zip
+          name: darwin-x64
+          path: ${{ steps.strings.outputs.build-output-dir }}/lib/*.dylib
 
+      - name: Upload ZIP artifact for Linux
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: ${{ steps.strings.outputs.build-output-dir }}/lib/*.so
+
+      - name: Upload ZIP artifact for Windows
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: win32-x64
+          path: ${{ steps.strings.outputs.build-output-dir }}\lib\*.dll
+
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: 
+      - build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          check-latest: true
+      
+      - name: Install dependencies
+        run: |
+          cd nodejs
+          npm ci
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Check current location
+        run: ls
+      - name: Move Artifacts
+        run: mv ./artifacts ./nodejs/lib
+      - name: Check after move
+        run: ls
+      
+      - name: Initialize Git user
+        run: |
+          git config --global user.email "gabriel@test.email"
+          git config --global user.name "Release Workflow"
+      - name: Initialise the NPM config
+        run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Run release
+        run: npm run release --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
