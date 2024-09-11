@@ -1,6 +1,6 @@
 {
   "name": "@cantoo/translator",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Node bindings for machine translation",
   "publishConfig": {
     "access": "public"
