@@ -11,6 +11,7 @@
   },
   "main": "index.js",
   "license": "MIT",
+  "files": ["index.js", "/lib", "package.json", "README.md"],
   "dependencies": {
     "ffi-rs": "^1.0.91"
   },
