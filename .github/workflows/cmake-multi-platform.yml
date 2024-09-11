@@ -253,11 +253,32 @@ jobs:
           path: ${{ steps.strings.outputs.build-output-dir }}\lib\*.dll
 
 
+  check_version:
+    name: Commit check
+    runs-on: ubuntu-latest
+    outputs:
+      contains_version: ${{ steps.check_message.outputs.contains_version }}
+      version_number: ${{ steps.check_message.outputs.version_number }}
+    steps:
+      - name: Check commit message for version number
+        id: check_message
+        shell: bash
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            echo "Commit message contains a version number."
+            echo "contains_version=true" >> $GITHUB_OUTPUT
+            echo "version_number=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "Commit message does not contain a version number."
+            echo "contains_version=false" >> $GITHUB_OUTPUT
+          fi
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
     needs: 
       - build
+      - check_version
     steps:
       - uses: actions/checkout@v4
         with:
@@ -295,7 +316,11 @@ jobs:
       - name: Run release
         run: |
           cd nodejs
-          npm run release --ci
+          if [ "${{ needs.check_version.outputs.contains_version }}" == "true" ]; then
+            npm run release ${{ needs.check_version.outputs.version_number }}
+          else
+            npm run release --ci
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
